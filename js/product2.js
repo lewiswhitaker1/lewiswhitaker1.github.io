@@ -45,7 +45,13 @@ $(document).ready(function() {
 
     const previewButton = document.getElementById('previewButton');
     if (previewButton) {
-        previewButton.addEventListener('click', function() {
+        previewButton.addEventListener('click', async function() {
+            const recaptchaToken = grecaptcha.getResponse();
+            if (!recaptchaToken) {
+                alert('Please complete the reCAPTCHA verification');
+                return;
+            }
+
             const croppedImages = {};
             
             for (let i = 1; i <= 3; i++) {
@@ -59,10 +65,32 @@ $(document).ready(function() {
 
             const textLine1 = $('#textLine1').val();
 
-            console.log("Cropped Images:", croppedImages);
-            console.log("Text Line 1:", textLine1);
-            
-            alert("Product customization previewed! Check the console for image data.");
+            try {
+                const response = await fetch('https://8454-80-189-150-81.ngrok-free.app/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${recaptchaToken}`
+                    },
+                    body: JSON.stringify({
+                        images: croppedImages,
+                        text: textLine1
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Upload failed');
+                }
+
+                const result = await response.json();
+                console.log('Upload successful:', result);
+                alert('Product customization previewed!');
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Failed to upload images. Please try again.');
+            }
+
+            grecaptcha.reset();
         });
     }
 }); 

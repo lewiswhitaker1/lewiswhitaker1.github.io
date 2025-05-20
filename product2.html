@@ -6,16 +6,17 @@
     <title>Multi-Image Product</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <div class="product-intro">
         <div class="product-image-container">
-            <img src="images/triple-photo-block.avif" alt="Multi-Image Product" id="baseProductImage" class="base-product-image">
+            <img src="images/3mm-photo-keyring.jpg" alt="Multi-Image Product" id="baseProductImage" class="base-product-image">
         </div>
         <div class="usage-guide">
-            <h3>How to Create Your Custom Triple Photo Block</h3>
+            <h3>How to Create Your Custom Product</h3>
             <ol>
-                <li>Upload your 3 images using the upload buttons below</li>
+                <li>Upload your images using the upload buttons below</li>
                 <li>Use the cropping tool to select the perfect portion of each image</li>
                 <li>Add any text you'd like to appear on your product</li>
             </ol>
@@ -48,6 +49,7 @@
                     <label for="textLine1">Text Line 1:</label>
                     <input type="text" id="textLine1" name="textLine1" placeholder="Enter text here">
                 </section>
+                <div class="g-recaptcha" data-sitekey="6LeVpEErAAAAADIsGgKwZu9M4Chq8z6f703_1qKB"></div>
                 <button id="previewButton">Preview Customization</button>
             </div>
             
@@ -70,6 +72,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/triple-photo-block.js"></script>
+    <script src="js/product2.js"></script>
 </body>
 </html> 
