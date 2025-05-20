@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3mm Acrylic Photo Keyring</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Customize 3mm Acrylic Photo Keyring</h1>
+    </header>
+    <main>
+        <div class="product-page-header">
+            <h2>3mm Acrylic Photo Keyring</h2>
+            <p>Personalize your own acrylic keyring with your favorite photo</p>
+        </div>
+        
+        <div class="product-steps">
+            <div class="step">
+                <h4>Step 1</h4>
+                <p>Upload your image</p>
+            </div>
+            <div class="step">
+                <h4>Step 2</h4>
+                <p>Add your text</p>
+            </div>
+            <div class="step">
+                <h4>Step 3</h4>
+                <p>Preview and customize</p>
+            </div>
+        </div>
+        
+        <div class="customizer-container">
+            <div class="product-display">
+                <h2>Product Image</h2>
+                <img src="images/acrylic-photo-keyring.jpg" alt="Product 1" id="baseProductImage" class="base-product-image">
+                
+                <div class="product-info">
+                    <h3>About This Product</h3>
+                    <p>Our 3mm acrylic photo keyrings are perfect for keeping your favorite memories close at hand. Made from high-quality acrylic with your personalized image.</p>
+                    <ul>
+                        <li>Durable 3mm acrylic material</li>
+                        <li>High-quality printing</li>
+                        <li>Waterproof and scratch-resistant</li>
+                        <li>Includes metal keyring attachment</li>
+                    </ul>
+                </div>
+                
+                <h2>Product Preview</h2>
+                <div class="image-crop-area">
+                    <img id="imageToCrop" src="#" alt="Upload image to crop" style="display: none; max-width: 100%;">
+                </div>
+            </div>
+            
+            <div class="controls">
+                <h2>Customization Options</h2>
+                <section>
+                    <h3>Upload Your Image</h3>
+                    <input type="file" id="imageUpload" accept="image/*">
+                </section>
+                <section>
+                    <h3>Add Your Text</h3>
+                    <label for="textLine1">Text Line 1:</label>
+                    <input type="text" id="textLine1" name="textLine1" placeholder="Enter text here">
+                </section>
+                <button id="previewButton">Preview Customization</button>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 EversoPersonal</p>
+    </footer>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/product1.js"></script>
+</body>
+</html>
