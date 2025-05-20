@@ -24,7 +24,7 @@ $(document).ready(function() {
 
                         croppers[i] = new Cropper(imageToCrop, {
                             aspectRatio: 1,
-                            viewMode: 3,
+                            viewMode: 2,
                             dragMode: 'move',
                             responsive: true,
                             autoCropArea: 0.8,
@@ -34,7 +34,8 @@ $(document).ready(function() {
                             highlight: false,
                             cropBoxMovable: true,
                             cropBoxResizable: true,
-                            toggleDragModeOnDblclick: false
+                            toggleDragModeOnDblclick: false,
+                            imageFit: 'contain'
                         });
                     };
                     reader.readAsDataURL(files[0]);
