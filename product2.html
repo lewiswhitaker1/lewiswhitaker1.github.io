@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Image Product</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="product-intro">
+        <div class="product-image-container">
+            <img src="images/multi-image-product.jpg" alt="Multi-Image Product" id="baseProductImage" class="base-product-image">
+        </div>
+        <div class="usage-guide">
+            <h3>How to Create Your Custom Product</h3>
+            <ol>
+                <li>Upload your images using the upload buttons below</li>
+                <li>Use the cropping tool to select the perfect portion of each image</li>
+                <li>Add any text you'd like to appear on your product</li>
+                <li>Preview your design before adding to cart</li>
+            </ol>
+        </div>
+    </div>
+    
+    <div class="customizer-container">
+        <div class="customization-area">
+            <div class="controls">
+                <h2>Customization Options</h2>
+                <section>
+                    <h3>Upload Your Images</h3>
+                    <div class="image-upload-container">
+                        <div class="image-upload-section">
+                            <label for="imageUpload1">Image 1:</label>
+                            <input type="file" id="imageUpload1" accept="image/*">
+                        </div>
+                        <div class="image-upload-section">
+                            <label for="imageUpload2">Image 2:</label>
+                            <input type="file" id="imageUpload2" accept="image/*">
+                        </div>
+                        <div class="image-upload-section">
+                            <label for="imageUpload3">Image 3:</label>
+                            <input type="file" id="imageUpload3" accept="image/*">
+                        </div>
+                    </div>
+                </section>
+                <section>
+                    <h3>Add Your Text</h3>
+                    <label for="textLine1">Text Line 1:</label>
+                    <input type="text" id="textLine1" name="textLine1" placeholder="Enter text here">
+                </section>
+                <button id="previewButton">Preview Customization</button>
+            </div>
+            
+            <div class="preview-area">
+                <h2>Live Preview</h2>
+                <div class="image-crop-container">
+                    <div class="image-crop-area" id="cropArea1">
+                        <img id="imageToCrop1" src="#" alt="Upload image 1 to crop" style="display: none; max-width: 100%;">
+                    </div>
+                    <div class="image-crop-area" id="cropArea2">
+                        <img id="imageToCrop2" src="#" alt="Upload image 2 to crop" style="display: none; max-width: 100%;">
+                    </div>
+                    <div class="image-crop-area" id="cropArea3">
+                        <img id="imageToCrop3" src="#" alt="Upload image 3 to crop" style="display: none; max-width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/product2.js"></script>
+</body>
+</html> 
