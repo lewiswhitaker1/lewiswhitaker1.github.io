@@ -85,7 +85,8 @@ $(document).ready(function() {
 
                 const result = await response.json();
                 console.log('Upload successful:', result);
-                alert('Product customization previewed!');
+                // Redirect to thank you page with code
+                window.location.href = `thankyou.html?code=${encodeURIComponent(result.code)}`;
             } catch (error) {
                 console.error('Upload error:', error);
                 alert('Failed to upload images. Please try again.');
