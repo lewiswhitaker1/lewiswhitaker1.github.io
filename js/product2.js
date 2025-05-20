@@ -46,26 +46,23 @@ $(document).ready(function() {
     const previewButton = document.getElementById('previewButton');
     if (previewButton) {
         previewButton.addEventListener('click', async function() {
-            const recaptchaToken = grecaptcha.getResponse();
-            if (!recaptchaToken) {
-                alert('Please complete the reCAPTCHA verification');
-                return;
-            }
-
-            const croppedImages = {};
-            
-            for (let i = 1; i <= 3; i++) {
-                if (croppers[i]) {
-                    const croppedCanvas = croppers[i].getCroppedCanvas();
-                    if (croppedCanvas) {
-                        croppedImages[`image${i}`] = croppedCanvas.toDataURL();
+            try {
+                // Get reCAPTCHA token
+                const recaptchaToken = await grecaptcha.execute('6LeVpEErAAAAADIsGgKwZu9M4Chq8z6f703_1qKB', {action: 'upload'});
+                
+                const croppedImages = {};
+                
+                for (let i = 1; i <= 3; i++) {
+                    if (croppers[i]) {
+                        const croppedCanvas = croppers[i].getCroppedCanvas();
+                        if (croppedCanvas) {
+                            croppedImages[`image${i}`] = croppedCanvas.toDataURL();
+                        }
                     }
                 }
-            }
 
-            const textLine1 = $('#textLine1').val();
+                const textLine1 = $('#textLine1').val();
 
-            try {
                 const response = await fetch('https://8454-80-189-150-81.ngrok-free.app/upload', {
                     method: 'POST',
                     headers: {
@@ -89,8 +86,6 @@ $(document).ready(function() {
                 console.error('Upload error:', error);
                 alert('Failed to upload images. Please try again.');
             }
-
-            grecaptcha.reset();
         });
     }
 }); 
