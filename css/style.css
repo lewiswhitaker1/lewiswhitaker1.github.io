@@ -71,17 +71,16 @@ main {
 
 .customizer-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
+    flex-direction: column;
+    gap: 20px;
     max-width: 1000px;
     margin: 0 auto;
 }
 
 .product-display {
-    flex: 2;
-    min-width: 300px;
     display: flex;
     flex-direction: column;
+    gap: 20px;
 }
 
 .product-display h2 {
@@ -93,13 +92,12 @@ main {
 }
 
 .controls {
-    flex: 1;
-    min-width: 250px;
     background-color: rgba(255, 255, 255, 0.03);
-    padding: 20px;
+    padding: 25px;
     border-radius: 8px;
     border: 1px solid var(--border-color);
     box-shadow: 0 4px 8px var(--shadow-color);
+    margin-top: 10px;
 }
 
 .controls h2 {
@@ -149,19 +147,7 @@ section {
 }
 
 .product-page-header {
-    text-align: center;
-    margin-bottom: 25px;
-}
-
-.product-page-header h2 {
-    font-size: 1.8rem;
-    margin-bottom: 10px;
-}
-
-.product-page-header p {
-    color: var(--text-secondary);
-    max-width: 600px;
-    margin: 0 auto;
+    display: none;
 }
 
 label {
@@ -271,13 +257,13 @@ ul li a:hover {
     max-width: 100%;
     height: auto;
     display: block;
-    margin-bottom: 20px;
+    margin: 0 auto 20px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     box-shadow: 0 4px 8px var(--shadow-color);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     object-fit: contain;
-    max-height: 300px;
+    max-height: 200px;
 }
 
 .base-product-image:hover {
