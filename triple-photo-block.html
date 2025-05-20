@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi-Image Product</title>
+    <title>Triple Photo Block</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
     <link rel="stylesheet" href="css/style.css">
     <script src="https://www.google.com/recaptcha/api.js?render=6LeVpEErAAAAADIsGgKwZu9M4Chq8z6f703_1qKB"></script>
@@ -11,14 +11,15 @@
 <body>
     <div class="product-intro">
         <div class="product-image-container">
-            <img src="images/acrylic-photo-keyring.jpg" alt="Multi-Image Product" id="baseProductImage" class="base-product-image">
+            <img src="images/triple-photo-block.avif" alt="triple photo block" id="baseProductImage" class="base-product-image">
         </div>
         <div class="usage-guide">
-            <h3>How to Create Your Custom Product</h3>
+            <h3>How to Create Your Custom Triple Photo Block</h3>
             <ol>
-                <li>Upload your images using the upload buttons below</li>
-                <li>Use the cropping tool to select the perfect portion of each image</li>
+                <li>Upload your image(s) using the upload button(s) below</li>
+                <li>Use the cropping tool to select the perfect portion the image(s)</li>
                 <li>Add any text you'd like to appear on your product</li>
+                <li>Click confirm when you're happy with your creation</li>
             </ol>
         </div>
     </div>
@@ -49,7 +50,7 @@
                     <label for="textLine1">Text Line 1:</label>
                     <input type="text" id="textLine1" name="textLine1" placeholder="Enter text here">
                 </section>
-                <button id="previewButton">Preview Customization</button>
+                <button id="previewButton">Confirm Customization</button>
             </div>
             
             <div class="preview-area">
@@ -58,9 +59,13 @@
                     <div class="image-crop-area" id="cropArea1">
                         <img id="imageToCrop1" src="#" alt="Upload image 1 to crop" style="display: none; max-width: 100%;">
                     </div>
+                </div>
+                <div class="image-crop-container">
                     <div class="image-crop-area" id="cropArea2">
                         <img id="imageToCrop2" src="#" alt="Upload image 2 to crop" style="display: none; max-width: 100%;">
                     </div>
+                </div>
+                <div class="image-crop-container">
                     <div class="image-crop-area" id="cropArea3">
                         <img id="imageToCrop3" src="#" alt="Upload image 3 to crop" style="display: none; max-width: 100%;">
                     </div>
@@ -71,6 +76,6 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
     <script src="js/main.js"></script>
-    <script src="js/product2.js"></script>
+    <script src="js/acrylic-photo-keyring.js"></script>
 </body>
 </html> 

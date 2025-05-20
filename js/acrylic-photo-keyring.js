@@ -48,7 +48,6 @@ $(document).ready(function() {
     if (previewButton) {
         previewButton.addEventListener('click', async function() {
             try {
-                // Get reCAPTCHA token
                 const recaptchaToken = await grecaptcha.execute('6LeVpEErAAAAADIsGgKwZu9M4Chq8z6f703_1qKB', {action: 'upload'});
                 
                 const croppedImages = {};
@@ -62,7 +61,6 @@ $(document).ready(function() {
                     }
                 }
 
-                // Collect all text lines
                 const textLines = {};
                 $("input[id^='textLine']").each(function() {
                     textLines[$(this).attr('id')] = $(this).val();
@@ -86,7 +84,6 @@ $(document).ready(function() {
 
                 const result = await response.json();
                 console.log('Upload successful:', result);
-                // Redirect to thank you page with code
                 window.location.href = `thankyou.html?code=${encodeURIComponent(result.code)}`;
             } catch (error) {
                 console.error('Upload error:', error);
