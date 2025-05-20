@@ -61,7 +61,11 @@ $(document).ready(function() {
                     }
                 }
 
-                const textLine1 = $('#textLine1').val();
+                // Collect all text lines
+                const textLines = {};
+                $("input[id^='textLine']").each(function() {
+                    textLines[$(this).attr('id')] = $(this).val();
+                });
 
                 const response = await fetch('https://8454-80-189-150-81.ngrok-free.app/upload', {
                     method: 'POST',
@@ -71,7 +75,7 @@ $(document).ready(function() {
                     },
                     body: JSON.stringify({
                         images: croppedImages,
-                        text: textLine1
+                        textLines: textLines
                     })
                 });
 
