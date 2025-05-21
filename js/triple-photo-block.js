@@ -66,7 +66,7 @@ $(document).ready(function() {
                     textLines[$(this).attr('id')] = $(this).val();
                 });
 
-                const response = await fetch('https://8454-80-189-150-81.ngrok-free.app/upload', {
+                const response = await fetch('https://6fed-80-189-150-81.ngrok-free.app/upload', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
