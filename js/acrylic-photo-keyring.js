@@ -50,13 +50,15 @@ $(document).ready(function() {
             try {
                 const recaptchaToken = await grecaptcha.execute('6LeVpEErAAAAADIsGgKwZu9M4Chq8z6f703_1qKB', {action: 'upload'});
                 
-                const croppedImages = {};
+                const formData = new FormData();
                 
                 for (let i = 1; i <= 3; i++) {
                     if (croppers[i]) {
                         const croppedCanvas = croppers[i].getCroppedCanvas();
                         if (croppedCanvas) {
-                            croppedImages[`image${i}`] = croppedCanvas.toDataURL();
+                            // Convert canvas to blob
+                            const blob = await new Promise(resolve => croppedCanvas.toBlob(resolve, 'image/jpeg', 0.95));
+                            formData.append(`image${i}`, blob, `image${i}.jpg`);
                         }
                     }
                 }
@@ -65,17 +67,15 @@ $(document).ready(function() {
                 $("input[id^='textLine']").each(function() {
                     textLines[$(this).attr('id')] = $(this).val();
                 });
+                
+                formData.append('textLines', JSON.stringify(textLines));
 
                 const response = await fetch('https://6fed-80-189-150-81.ngrok-free.app/upload', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Bearer ${recaptchaToken}`
                     },
-                    body: JSON.stringify({
-                        images: croppedImages,
-                        textLines: textLines
-                    })
+                    body: formData
                 });
 
                 if (!response.ok) {
