@@ -790,13 +790,4 @@ body.thank-you-page {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px var(--shadow-color);
     }
-    
-    /* Not Found Page Specific Styling */
-    .not-found-page {
-        background-color: var(--bg-dark);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
 }
