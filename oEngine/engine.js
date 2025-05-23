@@ -7,6 +7,22 @@ class Ball {
         this.velocityX = (Math.random() - 0.5) * 5;
         this.restitution = 0.7;
     }
+
+    isPointInside(x, y) {
+        const dx = this.x - x;
+        const dy = this.y - y;
+        return (dx * dx + dy * dy) <= (this.radius * this.radius);
+    }
+
+    applyRandomImpulse() {
+        const direction = Math.floor(Math.random() * 3) - 1;
+        
+        const strength = 15;
+        
+        this.velocityY = -strength;
+        
+        this.velocityX = direction * strength;
+    }
 }
 
 class Engine {
@@ -23,6 +39,8 @@ class Engine {
         
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
+        
+        this.canvas.addEventListener('click', (e) => this.handleClick(e));
         
         for (let i = 0; i < 10; i++) {
             this.balls.push(new Ball(
@@ -142,6 +160,19 @@ class Engine {
         
         this.lastTime = currentTime;
         requestAnimationFrame(() => this.gameLoop());
+    }
+
+    handleClick(event) {
+        const rect = this.canvas.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        for (let ball of this.balls) {
+            if (ball.isPointInside(x, y)) {
+                ball.applyRandomImpulse();
+                break;
+            }
+        }
     }
 }
 
