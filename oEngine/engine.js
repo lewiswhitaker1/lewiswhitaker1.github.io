@@ -1,3 +1,20 @@
+const GAME_SETTINGS = {
+    GRAVITY: 0.25,
+    INITIAL_X_VELOCITY_SCALE: 10,
+    BALL_RESTITUTION: 0.7,
+    CLICK_IMPULSE_STRENGTH: 15,
+    CLICK_ANIMATION_DURATION_FRAMES: 30,
+    CLICK_ANIMATION_PULSE_SCALE: 0.3,
+    NUM_BALLS: 10,
+    MIN_BALL_RADIUS: 10,
+    MAX_BALL_RADIUS_ADDITION: 35,
+    DEFAULT_BALL_COLOR: '#4CAF50',
+    CLICK_BALL_COLOR: '#FF4081',
+    BACKGROUND_COLOR: '#1a1a1a',
+    GLOW_BLUR_RADIUS: 20,
+    INITIAL_BALL_MAX_Y_FACTOR: 0.5
+};
+
 class Ball {
     constructor(x, y, radius) {
         this.x = x;
@@ -5,13 +22,13 @@ class Ball {
         this.radius = radius;
         this.baseRadius = radius;
         this.velocityY = 0;
-        this.velocityX = (Math.random() - 0.5) * 5;
-        this.restitution = 0.7;
+        this.velocityX = (Math.random() - 0.5) * GAME_SETTINGS.INITIAL_X_VELOCITY_SCALE;
+        this.restitution = GAME_SETTINGS.BALL_RESTITUTION;
         this.clickAnimation = {
             active: false,
-            duration: 30,
+            duration: GAME_SETTINGS.CLICK_ANIMATION_DURATION_FRAMES,
             currentFrame: 0,
-            color: '#4CAF50'
+            color: GAME_SETTINGS.DEFAULT_BALL_COLOR
         };
     }
 
@@ -23,13 +40,13 @@ class Ball {
 
     applyRandomImpulse() {
         const direction = Math.floor(Math.random() * 3) - 1;
-        const strength = 15;
+        const strength = GAME_SETTINGS.CLICK_IMPULSE_STRENGTH;
         this.velocityY = -strength;
         this.velocityX = direction * strength;
-
+        
         this.clickAnimation.active = true;
         this.clickAnimation.currentFrame = 0;
-        this.clickAnimation.color = '#FF4081';
+        this.clickAnimation.color = GAME_SETTINGS.CLICK_BALL_COLOR;
     }
 
     updateAnimation() {
@@ -38,14 +55,36 @@ class Ball {
             
             const progress = this.clickAnimation.currentFrame / this.clickAnimation.duration;
             
-            const pulseScale = 1 + Math.sin(progress * Math.PI) * 0.3;
+            const pulseScale = 1 + Math.sin(progress * Math.PI) * GAME_SETTINGS.CLICK_ANIMATION_PULSE_SCALE;
             this.radius = this.baseRadius * pulseScale;
             
             if (progress >= 1) {
                 this.clickAnimation.active = false;
                 this.radius = this.baseRadius;
-                this.clickAnimation.color = '#4CAF50';
+                this.clickAnimation.color = GAME_SETTINGS.DEFAULT_BALL_COLOR;
             }
+        }
+    }
+
+    updatePhysicsAndWallCollisions(gravity, canvasWidth, canvasHeight) {
+        this.velocityY += gravity;
+        this.x += this.velocityX;
+        this.y += this.velocityY;
+
+        if (this.y + this.radius > canvasHeight) {
+            this.y = canvasHeight - this.radius;
+            this.velocityY = -this.velocityY * this.restitution;
+        } else if (this.y - this.radius < 0) {
+            this.y = this.radius;
+            this.velocityY = -this.velocityY * this.restitution;
+        }
+
+        if (this.x + this.radius > canvasWidth) {
+            this.x = canvasWidth - this.radius;
+            this.velocityX = -this.velocityX * this.restitution;
+        } else if (this.x - this.radius < 0) {
+            this.x = this.radius;
+            this.velocityX = -this.velocityX * this.restitution;
         }
     }
 }
@@ -60,18 +99,18 @@ class Engine {
         this.frameCount = 0;
         this.lastFpsUpdate = 0;
         
-        this.gravity = 0.5;
+        this.gravity = GAME_SETTINGS.GRAVITY;
         
         this.resizeCanvas();
         window.addEventListener('resize', () => this.resizeCanvas());
         
         this.canvas.addEventListener('click', (e) => this.handleClick(e));
         
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < GAME_SETTINGS.NUM_BALLS; i++) {
             this.balls.push(new Ball(
                 Math.random() * this.canvas.width,
-                Math.random() * this.canvas.height * 0.5,
-                10 + Math.random() * 20
+                Math.random() * this.canvas.height * GAME_SETTINGS.INITIAL_BALL_MAX_Y_FACTOR,
+                GAME_SETTINGS.MIN_BALL_RADIUS + Math.random() * GAME_SETTINGS.MAX_BALL_RADIUS_ADDITION
             ));
         }
         
@@ -85,24 +124,8 @@ class Engine {
     
     update(deltaTime) {
         for (let ball of this.balls) {
-            ball.velocityY += this.gravity;
-            
-            ball.x += ball.velocityX;
-            ball.y += ball.velocityY;
-            
-            if (ball.y + ball.radius > this.canvas.height) {
-                ball.y = this.canvas.height - ball.radius;
-                ball.velocityY = -ball.velocityY * ball.restitution;
-            }
-            
-            if (ball.x + ball.radius > this.canvas.width) {
-                ball.x = this.canvas.width - ball.radius;
-                ball.velocityX = -ball.velocityX * ball.restitution;
-            }
-            if (ball.x - ball.radius < 0) {
-                ball.x = ball.radius;
-                ball.velocityX = -ball.velocityX * ball.restitution;
-            }
+            ball.updatePhysicsAndWallCollisions(this.gravity, this.canvas.width, this.canvas.height);
+            ball.updateAnimation();
         }
 
         for (let i = 0; i < this.balls.length; i++) {
@@ -149,19 +172,17 @@ class Engine {
     }
     
     render() {
-        this.ctx.fillStyle = '#1a1a1a';
+        this.ctx.fillStyle = GAME_SETTINGS.BACKGROUND_COLOR;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         for (let ball of this.balls) {
-            ball.updateAnimation();
-            
             this.ctx.beginPath();
             this.ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
             this.ctx.fillStyle = ball.clickAnimation.color;
             
             if (ball.clickAnimation.active) {
                 this.ctx.shadowColor = ball.clickAnimation.color;
-                this.ctx.shadowBlur = 20;
+                this.ctx.shadowBlur = GAME_SETTINGS.GLOW_BLUR_RADIUS;
             }
             
             this.ctx.fill();
