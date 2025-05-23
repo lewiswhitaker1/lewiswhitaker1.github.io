@@ -3,9 +3,16 @@ class Ball {
         this.x = x;
         this.y = y;
         this.radius = radius;
+        this.baseRadius = radius;
         this.velocityY = 0;
         this.velocityX = (Math.random() - 0.5) * 5;
         this.restitution = 0.7;
+        this.clickAnimation = {
+            active: false,
+            duration: 30,
+            currentFrame: 0,
+            color: '#4CAF50'
+        };
     }
 
     isPointInside(x, y) {
@@ -16,12 +23,30 @@ class Ball {
 
     applyRandomImpulse() {
         const direction = Math.floor(Math.random() * 3) - 1;
-        
         const strength = 15;
-        
         this.velocityY = -strength;
-        
         this.velocityX = direction * strength;
+
+        this.clickAnimation.active = true;
+        this.clickAnimation.currentFrame = 0;
+        this.clickAnimation.color = '#FF4081';
+    }
+
+    updateAnimation() {
+        if (this.clickAnimation.active) {
+            this.clickAnimation.currentFrame++;
+            
+            const progress = this.clickAnimation.currentFrame / this.clickAnimation.duration;
+            
+            const pulseScale = 1 + Math.sin(progress * Math.PI) * 0.3;
+            this.radius = this.baseRadius * pulseScale;
+            
+            if (progress >= 1) {
+                this.clickAnimation.active = false;
+                this.radius = this.baseRadius;
+                this.clickAnimation.color = '#4CAF50';
+            }
+        }
     }
 }
 
@@ -128,11 +153,21 @@ class Engine {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         for (let ball of this.balls) {
+            ball.updateAnimation();
+            
             this.ctx.beginPath();
             this.ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            this.ctx.fillStyle = '#4CAF50';
+            this.ctx.fillStyle = ball.clickAnimation.color;
+            
+            if (ball.clickAnimation.active) {
+                this.ctx.shadowColor = ball.clickAnimation.color;
+                this.ctx.shadowBlur = 20;
+            }
+            
             this.ctx.fill();
             this.ctx.closePath();
+            
+            this.ctx.shadowBlur = 0;
         }
     }
     
