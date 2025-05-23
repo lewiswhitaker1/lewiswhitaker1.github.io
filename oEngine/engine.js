@@ -122,8 +122,8 @@ class Engine {
         const currentTime = performance.now();
         const deltaTime = currentTime - this.lastFpsUpdate;
         
-        if (deltaTime >= 1000) {
-            const fps = Math.round((this.frameCount * 1000) / deltaTime);
+        if (deltaTime >= 1) {
+            const fps = ((this.frameCount * 1000) / deltaTime).toFixed(3);
             this.fpsCounter.textContent = `FPS: ${fps}`;
             this.frameCount = 0;
             this.lastFpsUpdate = currentTime;
