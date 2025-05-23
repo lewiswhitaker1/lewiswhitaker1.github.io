@@ -61,6 +61,48 @@ class Engine {
                 ball.velocityX = -ball.velocityX * ball.restitution;
             }
         }
+
+        for (let i = 0; i < this.balls.length; i++) {
+            for (let j = i + 1; j < this.balls.length; j++) {
+                const ball1 = this.balls[i];
+                const ball2 = this.balls[j];
+
+                const dx = ball2.x - ball1.x;
+                const dy = ball2.y - ball1.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < ball1.radius + ball2.radius) {
+                    const nx = dx / distance;
+                    const ny = dy / distance;
+
+                    const relativeVelocityX = ball2.velocityX - ball1.velocityX;
+                    const relativeVelocityY = ball2.velocityY - ball1.velocityY;
+                    const relativeSpeed = relativeVelocityX * nx + relativeVelocityY * ny;
+
+                    if (relativeSpeed > 0) continue;
+
+                    const restitution = Math.min(ball1.restitution, ball2.restitution);
+                    const impulse = -(1 + restitution) * relativeSpeed;
+                    const mass1 = ball1.radius * ball1.radius;
+                    const mass2 = ball2.radius * ball2.radius;
+                    const totalMass = mass1 + mass2;
+
+                    const impulseX = impulse * nx;
+                    const impulseY = impulse * ny;
+
+                    ball1.velocityX -= (mass2 / totalMass) * impulseX;
+                    ball1.velocityY -= (mass2 / totalMass) * impulseY;
+                    ball2.velocityX += (mass1 / totalMass) * impulseX;
+                    ball2.velocityY += (mass1 / totalMass) * impulseY;
+
+                    const overlap = (ball1.radius + ball2.radius - distance) / 2;
+                    ball1.x -= overlap * nx;
+                    ball1.y -= overlap * ny;
+                    ball2.x += overlap * nx;
+                    ball2.y += overlap * ny;
+                }
+            }
+        }
     }
     
     render() {
