@@ -80,8 +80,8 @@ class Engine {
         const currentTime = performance.now();
         const deltaTime = currentTime - this.lastFpsUpdate;
         
-        if (deltaTime >= 10) {
-            const fps = Math.round((this.frameCount * 10) / deltaTime);
+        if (deltaTime >= 1000) {
+            const fps = Math.round((this.frameCount * 1000) / deltaTime);
             this.fpsCounter.textContent = `FPS: ${fps}`;
             this.frameCount = 0;
             this.lastFpsUpdate = currentTime;
