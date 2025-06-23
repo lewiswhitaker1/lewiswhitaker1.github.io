@@ -1,0 +1,1 @@
+This barebones game engine project was made with the entire purpose of running specifically on Github Pages.
