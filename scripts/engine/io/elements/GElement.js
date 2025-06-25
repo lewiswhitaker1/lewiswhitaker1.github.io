@@ -77,7 +77,7 @@ export default class GElement
     /**
      * @param {number} y
      */
-    setX(y)
+    setY(y)
     {
         this.position.y = y;
     }

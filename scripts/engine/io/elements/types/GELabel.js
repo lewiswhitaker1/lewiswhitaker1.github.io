@@ -18,7 +18,10 @@ export default class GELabel extends GElement
      */
     color;
     /**
-     * @typedef {(alpha: number, context: CanvasRenderingContext2D, label: {font: GELabelFont, text: string, letter: string, index: number}, position: {x: number, y: number}) => void} GELabelEffect
+     * @typedef {(alpha: number, context: CanvasRenderingContext2D,
+     * label: {font: GELabelFont, text: string, color: string, letter: string, index: number},
+     * shadow: {color: string, blur: number, x: number, y: number},
+     * position: {x: number, y: number}) => void} GELabelEffect
      * @type {GELabelEffect[]}
      */
     effects;
@@ -88,22 +91,30 @@ export default class GELabel extends GElement
                         font: this.font,
                         text: this.text,
                         color: this.color,
-                        index: i,
-                        letter: this.text[i]
+                        letter: this.text[i],
+                        index: i
+                    };
+                    let shadow =
+                    {
+                        color: '#00000000',
+                        blur: 0,
+                        x: 0,
+                        y: 0
                     };
                     let position =
                     {
-                        x: this.getX() + this.font.getTextWidth(this.text.substring(0, i)),
+                        x: this.getX() + this.font.getWidth(this.text.substring(0, i)),
                         y: this.getY()
-                    }
+                    };
                     this.effects.forEach(process =>
                     {
-                        process(alpha, context, label, position);
-                        GameUtil.Canvas.drawText(context, label.font, label.color, position.x, position.y, label.letter);
+                        process(alpha, context, label, shadow, position);
+                        GameUtil.Canvas.drawText(context, { font: label.font, color: label.color, text: label.letter },
+                            position.x, position.y, { color: shadow.color, blur: shadow.blur, x: shadow.x, y: shadow.y });
                     });
                 }
             }
-            else GameUtil.Canvas.drawText(context, this.font, this.color, this.getX(), this.getY(), this.text);
+            else GameUtil.Canvas.drawText(context, { font: this.font, color: this.color, text: this.text }, this.getX(), this.getY());
         }
     }
 }
@@ -123,6 +134,9 @@ export class GELabelFont
         this.size = size;
     }
 
+    /**
+     * @param {string} id
+     */
     setFont(id)
     {
         this.id = id;
@@ -133,7 +147,20 @@ export class GELabelFont
         return `${this.size}px ${this.id}`;
     }
 
-    getMetrics(text = '')
+    /**
+     * @param {number} size 
+     */
+    setSize(size)
+    {
+        this.size = size;
+    }
+
+    getSize()
+    {
+        return this.size;
+    }
+
+    getMetrics(text = 'A')
     {
         let context = GameUtil.Canvas.getContext();
         context.save();
@@ -143,14 +170,13 @@ export class GELabelFont
         return metrics;
     }
 
-    getTextWidth(text)
+    getWidth(text)
     {
         return this.getMetrics(text).width;
     }
 
-    getTextHeight(text)
+    getHeight()
     {
-        let metrics = this.getMetrics(text);
-        return metrics.fontBoundingBoxAscent - metrics.fontBoundingBoxDescent;
+        return this.getMetrics().actualBoundingBoxAscent;
     }
 }

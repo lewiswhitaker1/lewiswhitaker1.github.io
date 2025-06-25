@@ -78,7 +78,7 @@ export default class GScene
     process(event, ...args)
     {
         if(event === 'draw') GameUtil.Canvas.getContext().reset();
-        this.game.getEvents().call(event, ...args);
+        this.game.getEvents().call(event, this.game, ...args);
         this.layers.forEach((layer, id) =>
         {
             let elements = layer.getElements();

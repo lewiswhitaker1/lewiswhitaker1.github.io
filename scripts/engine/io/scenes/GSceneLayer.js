@@ -66,14 +66,14 @@ export default class GSceneLayer
      */
     getElements()
     {
-        let maximum = 0;
+        let max = 0;
         this.elements.forEach((element, id) =>
         {
             let y = Math.floor(element.getY());
-            if(y > maximum) maximum = y;
+            if(y > max) max = y;
         });
         let elements = [];
-        let padding = maximum.toString().length;
+        let padding = max.toString().length;
         this.elements.forEach((element, id) =>
         {
             let order = `${Math.floor(element.getY())}`;

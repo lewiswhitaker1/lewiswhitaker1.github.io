@@ -5,7 +5,12 @@ import GameUtil from "./GameUtil.js";
 export default class Game
 {
     id;
+    debug;
+    /**
+     * @type {GScene}
+     */
     scene;
+    frames;
     update;
     events;
 
@@ -16,15 +21,23 @@ export default class Game
     constructor(id = 'engine', update = 60, timeout = 1000)
     {
         this.id = id;
+        this.debug = false;
         this.scene = null;
-        this.update = {
+        this.update =
+        {
             time: 0,
             step: 1 / update,
             delta: 1000 / update,
             alpha: 0,
             overall: 0,
             timeout: timeout
-        }
+        };
+        this.frames = 
+        {
+            time: 0,
+            current: 0,
+            average: 0
+        };
         this.events = new GEventHandler();
         this.loop = this.loop.bind(this);
         this.load();
@@ -35,15 +48,24 @@ export default class Game
     {
         let canvas = document.createElement('canvas');
         canvas.setAttribute('id', this.id);
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        window.addEventListener('resize', () =>
-        {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
         document.body.appendChild(canvas);
+        this.events.call('resize', canvas);
         this.events.call('load', this);
+        this.events.on('process', () =>
+        {
+            this.frames.current++;
+            let time = performance.now();
+            if(time - this.frames.time >= 1000)
+            {
+                this.frames.time = time;
+                this.frames.average = this.frames.current;
+                this.frames.current = 0;
+            }
+            let font = GameUtil.Font.getFont('consolas', 12);
+            let canvas = GameUtil.Canvas.getCanvas();
+            let context = GameUtil.Canvas.getContext();
+            GameUtil.Canvas.drawText(context, { font: font, color: '#FFFFFF64', text: GameUtil.Engine.getVersion() }, 1, canvas.height - font.getHeight() - 1);
+        });
     }
     
     loop()
@@ -53,7 +75,6 @@ export default class Game
         this.update.time = time;
         if(this.scene != null)
         {
-            this.events.call('process', (this));
             if(delta <= this.update.timeout)
             {
                 this.update.alpha += delta;
@@ -64,6 +85,7 @@ export default class Game
                     this.scene.process('tick', this.update.step);
                 }
                 this.scene.process('draw', this.update.overall, GameUtil.Canvas.getContext());
+                this.events.call('process', (this));
             }
         }
         requestAnimationFrame(this.loop);
@@ -94,89 +116,5 @@ export default class Game
     getEvents()
     {
         return this.events;
-    }
-
-    static util =
-    {
-        clear()
-        {
-            let canvas = this.getCanvas();
-            let context = this.get2DContext();
-            context.fillStyle = 'black';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-        },
-        /**
-         * @returns {HTMLCanvasElement}
-         */
-        getCanvas()
-        {
-            return document.getElementById('game');
-        },
-        get2DContext()
-        {
-            return this.getCanvas().getContext('2d');
-        },
-        /**
-         * @param {CanvasRenderingContext2D} context 
-         * @param {*} font 
-         * @param {*} size 
-         * @param {*} string 
-         * @returns {number}
-         */
-        getTextWidth(context, font, size, string)
-        {
-            context.save();
-            context.font = `${size}px ${font}`;
-            let width = context.measureText(string).width;
-            context.restore();
-            return width;
-        },
-        /**
-         * @param {CanvasRenderingContext2D} context 
-         * @param {*} font 
-         * @param {*} size 
-         * @returns {number}
-         */
-        getTextHeight(context, font, size)
-        {
-            context.save();
-            context.font = `${size}px ${font}`;
-            let height = context.measureText(' ').actualBoundingBoxAscent;
-            context.restore();
-            return height;
-        },
-        /**
-         * @param {CanvasRenderingContext2D} context
-         * @param {string} size 
-         * @param {string} font 
-         * @param {string} color 
-         * @param {number} x 
-         * @param {number} y 
-         * @param {string} string 
-         */
-        drawText(context, size, font, color, x, y, string)
-        {
-            context.save();
-            context.font = `${size}px ${font}`;
-            context.fillStyle = color;
-            context.fillText(string, x, y);
-            context.restore();
-        },
-        /**
-         * @param {CanvasRenderingContext2D} context
-         * @param {HTMLImageElement} image
-         * @param {number} x
-         * @param {number} y
-         * @param {number} imageX
-         * @param {number} imageY
-         * @param {number} imageW
-         * @param {number} imageH
-         */
-        drawImage(context, image, x, y, imageX, imageY, imageW, imageH)
-        {
-            let w = imageW;
-            let h = imageH;
-            context.drawImage(image, imageX, imageY, imageW, imageH, x, y, w, h);
-        }
     }
 }
