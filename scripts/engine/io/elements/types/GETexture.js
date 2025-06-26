@@ -45,6 +45,6 @@ export default class GETexture extends GElement
      */
     draw(alpha, context)
     {
-        if(this.isReady()) GameUtil.Canvas.drawImage(context, this.texture, this.getX(), this.getY(), this.getWidth(), this.getHeight())
+        if(this.isReady()) GameUtil.Canvas.drawImage(context, this.texture, this.getX, this.getY, this.getWidth(), this.getHeight())
     }
 }

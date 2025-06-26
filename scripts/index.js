@@ -1,7 +1,5 @@
-import Game from './engine/io/Game.js';
-import CarGame from './cargame/CarGame.js';
+import Game from "./engine/io/Game.js";
+import Example from "./example/Example.js";
 
-window.onload = function() {
-    let game = new Game('game', 60);
-    game.setScene(new CarGame('cargame', game));
-}
+const game = new Game(); 
+game.setScene(new Example('example', game));
