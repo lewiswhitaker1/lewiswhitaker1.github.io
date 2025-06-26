@@ -29,7 +29,7 @@ export default class CarGameScene extends GScene {
         layer.createElement(roadRight);
 
         let roadRight2 = new GESpriteAtlas('road-right2', layer, atlasSource, roadRightSpriteBounds);
-        roadRight2.setX(300);
+        roadRight2.setX(364);
         roadRight2.setY(300);
         layer.createElement(roadRight2);
         
