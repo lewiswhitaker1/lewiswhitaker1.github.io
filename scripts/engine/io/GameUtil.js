@@ -70,14 +70,12 @@ export default class GameUtil
          * @param {HTMLImageElement} image
          * @param {number} x
          * @param {number} y
-         * @param {number} imageX
-         * @param {number} imageY
-         * @param {number} imageW
-         * @param {number} imageH
+         * @param {number} width
+         * @param {number} height
          */
-        drawImage(context, image, x, y, imageX, imageY, imageW, imageH)
+        drawImage(context, image, x, y, width, height)
         {
-            
+            context.drawImage(image, x, y, width, height);
         },
         /**
          * @param {*} context 
