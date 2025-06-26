@@ -21,12 +21,21 @@ export default class CarGameScene extends GScene {
 
         
         
-        const atlasSource = './assets/sprites/cars_atlas.png';
-        const spriteBounds = { x: 0, y: 0, w: 64, h: 64 }; 
+        const atlas1Source = './assets/sprites/cars_atlas.png';
+        const sprite1Bounds = { x: 0, y: 0, w: 64, h: 64 }; 
 
-        let atlasSprite = new GESpriteAtlas('atlas-sprite', layer, atlasSource, spriteBounds);
-        atlasSprite.setX(100);
-        atlasSprite.setY(100);
-        layer.createElement(atlasSprite);
+        let atlasSprite1     = new GESpriteAtlas('atlas-sprite', layer, atlas1Source, sprite1Bounds);
+        atlasSprite1.setX(100);
+        atlasSprite1.setY(100);
+        layer.createElement(atlasSprite1);
+
+        const atlas2Source = './assets/sprites/cars_atlas.png';
+        const sprite2Bounds = { x: 64, y: 0, w: 64, h: 64 }; 
+
+        let atlasSprite2 = new GESpriteAtlas('atlas-sprite', layer, atlas2Source, sprite2Bounds);
+        atlasSprite2.setX(200);
+        atlasSprite2.setY(200);
+        layer.createElement(atlasSprite2);
+        
     }
 }
