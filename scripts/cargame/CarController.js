@@ -5,7 +5,6 @@ export default class CarController extends GEController {
     constructor(id, layer, player) {
         super(id, layer);
         this.player = player;
-        this.active = false;
     }
 
     load() {
@@ -14,7 +13,7 @@ export default class CarController extends GEController {
     }
 
     handleKeyEvent(event, isDown) {
-        if (this.player && this.active) {
+        if (this.player) {
             switch (event.key.toLowerCase()) {
                 case 'w':
                     this.player.keys.w = isDown;
@@ -30,9 +29,5 @@ export default class CarController extends GEController {
                     break;
             }
         }
-    }
-
-    setActive(active) {
-        this.active = active;
     }
 } 
