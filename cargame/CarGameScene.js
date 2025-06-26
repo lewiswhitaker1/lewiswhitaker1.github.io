@@ -2,6 +2,7 @@ import GScene from "../scripts/engine/io/scenes/GScene.js";
 import Player from "./Player.js";
 import CarController from "./CarController.js";
 import GameUtil from "../scripts/engine/io/GameUtil.js";
+import GESpriteAtlas from "./GESpriteAtlas.js";
 
 export default class CarGameScene extends GScene {
     constructor(id, game) {
@@ -17,5 +18,15 @@ export default class CarGameScene extends GScene {
         let controller = new CarController('carController', layer, player);
         this.setController(controller);
         controller.load();
+
+        
+        
+        const atlasSource = './assets/sprites/cars_atlas.png';
+        const spriteBounds = { x: 0, y: 0, w: 64, h: 64 }; 
+
+        let atlasSprite = new GESpriteAtlas('atlas-sprite', layer, atlasSource, spriteBounds);
+        atlasSprite.setX(100);
+        atlasSprite.setY(100);
+        layer.createElement(atlasSprite);
     }
-} 
+}
