@@ -13,6 +13,13 @@ export default class CarGameScene extends GScene {
         const canvas = GameUtil.Canvas.getCanvas();
         let layer = this.createLayer('main');
         
+        let player = new Player('player', layer, canvas.width / 2, canvas.height / 2);
+        layer.createElement(player);
+
+        let controller = new CarController('carController', layer, player);
+        this.setController(controller);
+        controller.load();
+
         const atlasSource = './assets/sprites/cars_atlas.png';
         const roadRightSpriteBounds = { x: 192, y: 0, w: 64, h: 64 };
 
@@ -27,13 +34,6 @@ export default class CarGameScene extends GScene {
             roadSegment.setY(roadY);
             layer.createElement(roadSegment);
         }
-
-        let player = new Player('player', layer, canvas.width / 2, canvas.height / 2);
-        layer.createElement(player);
-
-        let controller = new CarController('carController', layer, player);
-        this.setController(controller);
-        controller.load();
         
     }
 }
