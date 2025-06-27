@@ -27,34 +27,17 @@ export default class CarGameScene extends GScene {
         speedometer.setY(canvas.height - 50);
         layer.createElement(speedometer);
 
-        const gearLabel = new GELabel("gearLabel", layer, speedometerFont, "N", "white");
-        gearLabel.setX(canvas.width / 2 + 100);
-        gearLabel.setY(canvas.height - 50);
-        layer.createElement(gearLabel);
-
-        const rpmLabel = new GELabel("rpmLabel", layer, speedometerFont, "0 RPM", "white");
-        rpmLabel.setX(canvas.width / 2 - 200);
-        rpmLabel.setY(canvas.height - 50);
-        layer.createElement(rpmLabel);
-
         this.getGame().getEvents().on('tick', () => {
             const speed = player.speed;
             const speedKmh = (speed / 10).toFixed(0);
             speedometer.setText(`${speedKmh} km/h`);
             speedometer.setX(canvas.width / 2 - speedometer.getFont().getWidth(speedometer.getText()) / 2);
-
-            const gear = player.currentGear;
-            const gearChar = gear === 1 ? "N" : gear === 0 ? "R" : (gear - 1).toString();
-            gearLabel.setText(gearChar);
-
-            const rpm = player.rpm.toFixed(0);
-            rpmLabel.setText(`${rpm} RPM`);
         });
 
         const atlasSource = './assets/sprites/cars_atlas.png';
         const roadRightSpriteBounds = { x: 192, y: 0, w: 64, h: 64 };
 
-        
+        // Create a horizontal road
         const roadY = canvas.height / 2;
         const roadTileWidth = roadRightSpriteBounds.w;
         const numTiles = Math.ceil(canvas.width / roadTileWidth);
