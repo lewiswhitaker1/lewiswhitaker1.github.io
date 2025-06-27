@@ -1,10 +1,12 @@
-import GEEntity from "../scripts/engine/io/elements/types/GEEntity.js";
+import GESpriteAtlas from "./GESpriteAtlas.js";
 
-export default class Player extends GEEntity {
+export default class Player extends GESpriteAtlas {
     constructor(id, layer, x, y) {
-        super(id, layer);
-        this.x = x;
-        this.y = y;
+        const atlasSource = './assets/sprites/cars_atlas.png';
+        const carSpriteBounds = { x: 0, y: 0, w: 64, h: 64 };
+        super(id, layer, atlasSource, carSpriteBounds);
+        this.setX(x);
+        this.setY(y);
         this.angle = 0;
         this.speed = 0;
         this.maxSpeed = 500;
@@ -17,15 +19,6 @@ export default class Player extends GEEntity {
             a: false,
             s: false,
             d: false,
-        };
-
-        this.sprite = new Image();
-        this.sprite.src = './assets/sprites/car1/base_blue.png';
-        this.ready = false;
-        this.sprite.onload = () => {
-            this.ready = true;
-            this.width = this.sprite.width;
-            this.height = this.sprite.height;
         };
     }
 
@@ -57,20 +50,27 @@ export default class Player extends GEEntity {
             }
         }
 
-        this.x += this.speed * Math.cos(this.angle) * delta;
-        this.y += this.speed * Math.sin(this.angle) * delta;
+        this.setX(this.getX() + this.speed * Math.cos(this.angle) * delta);
+        this.setY(this.getY() + this.speed * Math.sin(this.angle) * delta);
     }
 
     draw(alpha, context) {
-        if (!this.ready) return;
+        if (!this.isReady()) return;
 
         context.save();
-        context.translate(this.x, this.y);
+        context.translate(this.getX(), this.getY());
         context.rotate(this.angle);
-        context.drawImage(this.sprite, -this.width / 2, -this.height / 2, this.width, this.height);
+        context.drawImage(
+            this.texture,
+            this.atlasRect.x,
+            this.atlasRect.y,
+            this.atlasRect.w,
+            this.atlasRect.h,
+            -this.getWidth() / 2,
+            -this.getHeight() / 2,
+            this.getWidth(),
+            this.getHeight()
+        );
         context.restore();
     }
-
-    getX() { return this.x; }
-    getY() { return this.y; }
-} 
+}
