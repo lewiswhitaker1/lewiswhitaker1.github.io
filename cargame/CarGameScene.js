@@ -3,6 +3,7 @@ import Player from "./Player.js";
 import CarController from "./CarController.js";
 import GameUtil from "../scripts/engine/io/GameUtil.js";
 import GESpriteAtlas from "./GESpriteAtlas.js";
+import GELabel, { GELabelFont } from "../scripts/engine/io/elements/types/GELabel.js";
 
 export default class CarGameScene extends GScene {
     constructor(id, game) {
@@ -19,6 +20,19 @@ export default class CarGameScene extends GScene {
         let controller = new CarController('carController', layer, player);
         this.setController(controller);
         controller.load();
+
+        const speedometerFont = new GELabelFont("Arial", 24);
+        const speedometer = new GELabel("speedometer", layer, speedometerFont, "0 km/h", "white");
+        speedometer.setX(canvas.width / 2 - speedometer.getFont().getWidth("0 km/h") / 2);
+        speedometer.setY(canvas.height - 50);
+        layer.createElement(speedometer);
+
+        this.getGame().getEvents().on('tick', () => {
+            const speed = player.speed;
+            const speedKmh = (speed / 10).toFixed(0);
+            speedometer.setText(`${speedKmh} km/h`);
+            speedometer.setX(canvas.width / 2 - speedometer.getFont().getWidth(speedometer.getText()) / 2);
+        });
 
         const atlasSource = './assets/sprites/cars_atlas.png';
         const roadRightSpriteBounds = { x: 192, y: 0, w: 64, h: 64 };
