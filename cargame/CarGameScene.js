@@ -21,17 +21,19 @@ export default class CarGameScene extends GScene {
 
 
         const atlasSource = './assets/sprites/cars_atlas.png';
-        const roadRightSpriteBounds = { x: 192, y: 0, w: 64, h: 64 }; 
+        const roadRightSpriteBounds = { x: 192, y: 0, w: 64, h: 64 };
 
-        let roadRight = new GESpriteAtlas('road-right', layer, atlasSource, roadRightSpriteBounds);
-        roadRight.setX(300);
-        roadRight.setY(300);
-        layer.createElement(roadRight);
+        // Create a horizontal road
+        const roadY = canvas.height / 2;
+        const roadTileWidth = roadRightSpriteBounds.w;
+        const numTiles = Math.ceil(canvas.width / roadTileWidth);
 
-        let roadRight2 = new GESpriteAtlas('road-right2', layer, atlasSource, roadRightSpriteBounds);
-        roadRight2.setX(364);
-        roadRight2.setY(300);
-        layer.createElement(roadRight2);
+        for (let i = 0; i < numTiles; i++) {
+            const roadSegment = new GESpriteAtlas(`road-segment-${i}`, layer, atlasSource, roadRightSpriteBounds);
+            roadSegment.setX(i * roadTileWidth);
+            roadSegment.setY(roadY);
+            layer.createElement(roadSegment);
+        }
         
     }
 }
