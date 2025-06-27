@@ -21,12 +21,6 @@ export default class CarGameScene extends GScene {
         this.setController(controller);
         controller.load();
 
-        const controlsFont = new GELabelFont("Arial", 18);
-        const controlsLabel = new GELabel("controlsLabel", layer, controlsFont, "Controls: W, A, S, D | Shift: Q, E", "white");
-        controlsLabel.setX(canvas.width - controlsLabel.getFont().getWidth(controlsLabel.getText()) - 20);
-        controlsLabel.setY(20);
-        layer.createElement(controlsLabel);
-
         const speedometerFont = new GELabelFont("Arial", 24);
         const speedometer = new GELabel("speedometer", layer, speedometerFont, "0 km/h", "white");
         speedometer.setX(canvas.width / 2 - speedometer.getFont().getWidth("0 km/h") / 2);
