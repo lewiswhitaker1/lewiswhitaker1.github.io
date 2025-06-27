@@ -34,42 +34,61 @@ export default class Player extends GESpriteAtlas {
 
     tick(delta) {
         
-        if (this.keys.w && this.currentGear !== 1) { 
-            const gearRatio = this.gearRatios[this.currentGear + 1];
-            const maxSpeedForGear = 20 * (this.currentGear); 
 
-            if (this.speed < maxSpeedForGear) {
-                
-                const acceleration = (this.horsepower / this.weight) * (6 - this.currentGear) * 2;
-                this.speed += acceleration * delta;
-            }
-
+        
+        const gearRatio = this.gearRatios[this.currentGear + 1];
+        if (gearRatio > 0 && this.speed > 0.1) {
             
-            this.rpm = this.minRpm + (this.speed / maxSpeedForGear) * (this.maxRpm - this.minRpm);
-
+            const wheelRotationsPerSecond = this.speed / (2 * Math.PI * this.wheelRadius);
+            this.rpm = wheelRotationsPerSecond * gearRatio * this.finalDriveRatio * 60;
+        } else if (this.keys.w && this.currentGear === 1) {
+            
+            this.rpm += 4000 * delta;
         } else {
             
-            this.speed *= 0.98; 
-            if (this.currentGear === 1 && this.keys.w) { 
-                this.rpm += 4000 * delta;
-            } else {
-                this.rpm -= 2000 * delta;
-            }
+            this.rpm -= 2000 * delta;
+        }
+        
+        
+        this.rpm = Math.max(this.minRpm, Math.min(this.maxRpm, this.rpm));
+
+        
+        let drivingForce = 0;
+        if (this.keys.w && this.currentGear !== 1) { 
+            const torque = this.getTorque(this.rpm);
+            const transmissionEfficiency = 0.7; 
+            const wheelTorque = torque * gearRatio * this.finalDriveRatio * transmissionEfficiency;
+            drivingForce = wheelTorque / this.wheelRadius;
         }
 
         
+        const rollingResistance = 30 * this.speed; 
+        const airDrag = 0.2 * this.speed * this.speed; 
+        const totalResistance = rollingResistance + airDrag;
+
+        
+        const netForce = drivingForce - totalResistance;
+        const acceleration = netForce / this.weight; 
+
+        
+        this.speed += acceleration * delta;
+
+        
         if (this.keys.s) {
-            this.speed -= 30 * delta;
+            const brakingForce = 6000; 
+            const brakingAcceleration = brakingForce / this.weight;
+            this.speed -= brakingAcceleration * delta;
         }
 
         
         if (this.speed < 0) this.speed = 0;
-        this.rpm = Math.max(this.minRpm, Math.min(this.maxRpm, this.rpm));
 
+        
 
         
         if (this.speed > 0.1) {
-            const turnFactor = Math.max(0.2, 1 - this.speed / 80);
+            
+            const turnFactor = Math.max(0.2, 1 - this.speed / 50); 
             if (this.keys.a) {
                 this.angle -= this.turnSpeed * turnFactor * delta;
             }
@@ -78,8 +97,9 @@ export default class Player extends GESpriteAtlas {
             }
         }
 
-        this.setX(this.getX() + this.speed * Math.cos(this.angle) * delta);
-        this.setY(this.getY() + this.speed * Math.sin(this.angle) * delta);
+        
+        this.setX(this.getX() + this.speed * Math.cos(this.angle) * delta * 10); 
+        this.setY(this.getY() + this.speed * Math.sin(this.angle) * delta * 10);
     }
 
     draw(alpha, context) {
@@ -100,6 +120,24 @@ export default class Player extends GESpriteAtlas {
             this.getHeight()
         );
         context.restore();
+    }
+
+    getTorque(rpm) {
+        
+        const peakTorqueRpm = 4500;
+        const maxTorque = this.engineTorque;
+
+        if (rpm < this.minRpm) {
+            return 0;
+        }
+
+        if (rpm < peakTorqueRpm) {
+            
+            return maxTorque * (rpm - this.minRpm) / (peakTorqueRpm - this.minRpm);
+        } else {
+            
+            return maxTorque * (1 - (rpm - peakTorqueRpm) / (this.maxRpm - peakTorqueRpm));
+        }
     }
 
     shiftUp() {

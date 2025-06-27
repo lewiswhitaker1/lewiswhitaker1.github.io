@@ -45,7 +45,7 @@ export default class CarGameScene extends GScene {
 
         this.getGame().getEvents().on('tick', () => {
             const speed = player.speed;
-            const speedKmh = (speed / 10).toFixed(0);
+            const speedKmh = (speed * 3.6).toFixed(0); // Convert m/s to km/h
             speedometer.setText(`${speedKmh} km/h`);
             speedometer.setX(canvas.width / 2 - speedometer.getFont().getWidth(speedometer.getText()) / 2);
 
