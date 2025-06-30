@@ -12,20 +12,22 @@ export default class CarGameScene extends GScene {
 
     load() {
         const canvas = GameUtil.Canvas.getCanvas();
-        let layer = this.createLayer('main');
+        let backgroundLayer = this.createLayer('background');
+        let playerLayer = this.createLayer('player');
+        let uiLayer = this.createLayer('ui');
         
-        let player = new Player('player', layer, canvas.width / 2, canvas.height / 2);
-        layer.createElement(player);
+        let player = new Player('player', playerLayer, canvas.width / 2, canvas.height / 2);
+        playerLayer.createElement(player);
 
-        let controller = new CarController('carController', layer, player);
+        let controller = new CarController('carController', playerLayer, player);
         this.setController(controller);
         controller.load();
 
         const speedometerFont = new GELabelFont("Arial", 24);
-        const speedometer = new GELabel("speedometer", layer, speedometerFont, "0 km/h", "white");
+        const speedometer = new GELabel("speedometer", uiLayer, speedometerFont, "0 km/h", "white");
         speedometer.setX(canvas.width / 2 - speedometer.getFont().getWidth("0 km/h") / 2);
         speedometer.setY(canvas.height - 50);
-        layer.createElement(speedometer);
+        uiLayer.createElement(speedometer);
 
         this.getGame().getEvents().on('tick', () => {
             const speed = player.speed;
@@ -43,10 +45,10 @@ export default class CarGameScene extends GScene {
         const numTiles = Math.ceil(canvas.width / roadTileWidth);
 
         for (let i = 0; i < numTiles; i++) {
-            const roadSegment = new GESpriteAtlas(`road-segment-${i}`, layer, atlasSource, roadRightSpriteBounds);
+            const roadSegment = new GESpriteAtlas(`road-segment-${i}`, backgroundLayer, atlasSource, roadRightSpriteBounds);
             roadSegment.setX(i * roadTileWidth);
             roadSegment.setY(roadY);
-            layer.createElement(roadSegment);
+            backgroundLayer.createElement(roadSegment);
         }
         
     }
