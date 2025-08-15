@@ -23,17 +23,39 @@ export default class CarGameScene extends GScene {
         this.setController(controller);
         controller.load();
 
-        const speedometerFont = new GELabelFont("Arial", 24);
-        const speedometer = new GELabel("speedometer", uiLayer, speedometerFont, "0 km/h", "white");
-        speedometer.setX(canvas.width / 2 - speedometer.getFont().getWidth("0 km/h") / 2);
-        speedometer.setY(canvas.height - 50);
+        const uiFont = new GELabelFont("Arial", 16);
+        const speedometer = new GELabel("speedometer", uiLayer, uiFont, "0 km/h", "white");
+        speedometer.setX(12);
+        speedometer.setY(24);
         uiLayer.createElement(speedometer);
 
+        const rpmLabel = new GELabel("rpm", uiLayer, uiFont, "RPM: 0", "white");
+        rpmLabel.setX(12);
+        rpmLabel.setY(24 + 20);
+        uiLayer.createElement(rpmLabel);
+
+        const gearLabel = new GELabel("gear", uiLayer, uiFont, "Gear: 1", "white");
+        gearLabel.setX(12);
+        gearLabel.setY(24 + 40);
+        uiLayer.createElement(gearLabel);
+
+        const powerLabel = new GELabel("power", uiLayer, uiFont, "HP: 0", "white");
+        powerLabel.setX(12);
+        powerLabel.setY(24 + 60);
+        uiLayer.createElement(powerLabel);
+
+        const torqueLabel = new GELabel("torque", uiLayer, uiFont, "TQ: 0 Nm", "white");
+        torqueLabel.setX(12);
+        torqueLabel.setY(24 + 80);
+        uiLayer.createElement(torqueLabel);
+
         this.getGame().getEvents().on('tick', () => {
-            const speed = player.speed;
-            const speedKmh = (speed / 10).toFixed(0);
+            const speedKmh = player.getSpeedKmh().toFixed(0);
             speedometer.setText(`${speedKmh} km/h`);
-            speedometer.setX(canvas.width / 2 - speedometer.getFont().getWidth(speedometer.getText()) / 2);
+            rpmLabel.setText(`RPM: ${player.getRpm().toFixed(0)}`);
+            gearLabel.setText(`Gear: ${player.getGearLabel()}`);
+            powerLabel.setText(`HP: ${player.getHp().toFixed(0)}`);
+            torqueLabel.setText(`TQ: ${player.getTorqueNm().toFixed(0)} Nm`);
         });
 
         const atlasSource = './assets/sprites/cars_atlas.png';

@@ -37,6 +37,12 @@ export default class CarController extends GEController {
                 case 'd':
                     this.player.keys.d = isDown;
                     break;
+                case 'e': // gear up
+                    this.player.keys.e = isDown;
+                    break;
+                case 'q': // gear down
+                    this.player.keys.q = isDown;
+                    break;
             }
         }
     }
