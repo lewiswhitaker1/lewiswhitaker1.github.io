@@ -87,11 +87,11 @@ export default class Player extends GESpriteAtlas {
 			let rpmTarget = engineOmega * 60 / (2 * Math.PI);
 			// Prevent stall; blend toward idle when very slow
 			if (rpmTarget < this.idleRpm) rpmTarget = this.idleRpm;
-			this.rpm = this.#approach(this.rpm, rpmTarget, 5000 * delta); // smooth coupling
+			this.rpm = this.#approach(this.rpm, rpmTarget, 5000, delta); // smooth coupling
 		} else {
 			// Neutral: free-rev around idle based on throttle
 			const freeRev = this.idleRpm + throttle * (this.redlineRpm - this.idleRpm);
-			this.rpm = this.#approach(this.rpm, freeRev, 8000 * delta);
+			this.rpm = this.#approach(this.rpm, freeRev, 8000, delta);
 		}
 		this.rpm = Math.max(this.idleRpm, Math.min(this.redlineRpm, this.rpm));
 
@@ -99,6 +99,14 @@ export default class Player extends GESpriteAtlas {
 		let engineTorqueNm = this.#torqueAt(this.rpm) * throttle;
 		// Soft limiter near redline
 		if (this.rpm >= this.redlineRpm - 50) engineTorqueNm *= 0.2;
+		// Gear top-speed limiting: if vehicle speed corresponds to RPM above redline, remove drive force
+		if (gearRatio > 0 && throttle > 0) {
+			const vmax_mps = this.#gearVmaxMps(gearRatio);
+			if (v_mps >= vmax_mps - 0.2) {
+				engineTorqueNm = 0;
+				this.rpm = this.redlineRpm; // hold at redline when on limiter
+			}
+		}
 		let wheelTorqueNm = engineTorqueNm * gearRatio * this.finalDrive * this.drivetrainEfficiency;
 		let driveForceN = wheelTorqueNm / Math.max(this.wheelRadiusM, 1e-6);
 		this.engineTorqueNm = engineTorqueNm;
@@ -197,9 +205,9 @@ export default class Player extends GESpriteAtlas {
 		return this.gearRatios[this.currentGear] ?? 0;
 	}
 
-	#approach(current, target, ratePerSec) {
-		if (current < target) return Math.min(target, current + ratePerSec * (1/60));
-		if (current > target) return Math.max(target, current - ratePerSec * (1/60));
+	#approach(current, target, ratePerSec, deltaSeconds) {
+		if (current < target) return Math.min(target, current + ratePerSec * deltaSeconds);
+		if (current > target) return Math.max(target, current - ratePerSec * deltaSeconds);
 		return current;
 	}
 
@@ -223,5 +231,11 @@ export default class Player extends GESpriteAtlas {
 		const omega = rpm * 2 * Math.PI / 60;
 		const kw = torqueNm * omega / 1000;
 		return kw * 1.34102209; // mechanical HP
+	}
+
+	#gearVmaxMps(gearRatio) {
+		const engineOmegaMax = this.redlineRpm * 2 * Math.PI / 60; // rad/s
+		const wheelOmegaMax = engineOmegaMax / (gearRatio * this.finalDrive);
+		return wheelOmegaMax * this.wheelRadiusM;
 	}
 }
