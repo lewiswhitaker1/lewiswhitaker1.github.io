@@ -30,6 +30,10 @@ export default class Player extends GESpriteAtlas {
 		this.idleRpm = 900;
 		this.redlineRpm = 6500;
 		this.rpm = this.idleRpm;
+		this.engineInertia = 0.20; // kg·m^2 equivalent flywheel inertia
+		this.engineFrictionCoeff = 0.02; // Nm per rad/s internal viscous losses
+		this.engineBaseFrictionNm = 10; // baseline static losses
+		this.idleControlTorqueNm = 20; // extra torque to hold idle under no throttle
 		// Torque curve points [rpm, torqueNm] (compact 150hp-ish NA engine)
 		this.torqueCurve = [
 			[ 800, 110],
@@ -79,35 +83,52 @@ export default class Player extends GESpriteAtlas {
 		// Convert speed to m/s for physics
 		let v_mps = this.speed * this.metersPerPixel;
 
-		// Calculate engine RPM from wheel speed if in gear
+		// Engine/flywheel dynamics
 		const gearRatio = this.#getCurrentGearRatio();
-		if (gearRatio > 0) {
-			const wheelOmega = (v_mps / Math.max(this.wheelRadiusM, 1e-6)); // rad/s
-			let engineOmega = wheelOmega * gearRatio * this.finalDrive; // rad/s
-			let rpmTarget = engineOmega * 60 / (2 * Math.PI);
-			// Prevent stall; blend toward idle when very slow
-			if (rpmTarget < this.idleRpm) rpmTarget = this.idleRpm;
-			this.rpm = this.#approach(this.rpm, rpmTarget, 5000, delta); // smooth coupling
-		} else {
-			// Neutral: free-rev around idle based on throttle
-			const freeRev = this.idleRpm + throttle * (this.redlineRpm - this.idleRpm);
-			this.rpm = this.#approach(this.rpm, freeRev, 8000, delta);
-		}
-		this.rpm = Math.max(this.idleRpm, Math.min(this.redlineRpm, this.rpm));
-
-		// Engine torque and wheel thrust
+		let omegaEngine = this.rpm * 2 * Math.PI / 60; // rad/s
+		// Base engine torque from curve and throttle
 		let engineTorqueNm = this.#torqueAt(this.rpm) * throttle;
+		// Idle control to prevent stall when below idle with no throttle
+		if (this.rpm < this.idleRpm && throttle < 0.05) {
+			engineTorqueNm += this.idleControlTorqueNm;
+		}
 		// Soft limiter near redline
-		if (this.rpm >= this.redlineRpm - 50) engineTorqueNm *= 0.2;
-		// Gear top-speed limiting: if vehicle speed corresponds to RPM above redline, remove drive force
+		if (this.rpm >= this.redlineRpm - 50 && throttle > 0) {
+			engineTorqueNm *= 0.2;
+		}
+		// Internal engine losses
+		const engineLossNm = this.engineBaseFrictionNm + this.engineFrictionCoeff * omegaEngine;
+		let netEngineTorqueNm = engineTorqueNm - engineLossNm;
+		// Gear top-speed limiting: if theoretical speed exceeds redline in current gear
 		if (gearRatio > 0 && throttle > 0) {
 			const vmax_mps = this.#gearVmaxMps(gearRatio);
 			if (v_mps >= vmax_mps - 0.2) {
 				engineTorqueNm = 0;
-				this.rpm = this.redlineRpm; // hold at redline when on limiter
+				netEngineTorqueNm = -engineLossNm; // only losses act
 			}
 		}
-		let wheelTorqueNm = engineTorqueNm * gearRatio * this.finalDrive * this.drivetrainEfficiency;
+		if (gearRatio === 0) {
+			// Neutral: free-rev based on net torque and flywheel inertia
+			const alpha = netEngineTorqueNm / this.engineInertia; // rad/s^2
+			omegaEngine += alpha * delta;
+		} else {
+			// In gear: move engine speed toward kinematic reference, limited by available torque/inertia
+			const wheelOmega = (v_mps / Math.max(this.wheelRadiusM, 1e-6)); // rad/s
+			const omegaRef = wheelOmega * gearRatio * this.finalDrive; // rad/s
+			const alphaMax = netEngineTorqueNm / this.engineInertia; // rad/s^2
+			const dOmegaNeeded = omegaRef - omegaEngine;
+			let dOmegaAllowed = alphaMax * delta;
+			if (dOmegaNeeded > 0) dOmegaAllowed = Math.max(0, Math.min(dOmegaNeeded, dOmegaAllowed));
+			else dOmegaAllowed = Math.min(0, Math.max(dOmegaNeeded, dOmegaAllowed));
+			omegaEngine += dOmegaAllowed;
+		}
+		// Clamp engine speed and update RPM
+		omegaEngine = Math.max(this.idleRpm * 2 * Math.PI / 60, Math.min(this.redlineRpm * 2 * Math.PI / 60, omegaEngine));
+		this.rpm = omegaEngine * 60 / (2 * Math.PI);
+
+		// Wheel thrust (positive engine torque only drives wheels)
+		let driveEngineTorqueNm = Math.max(0, engineTorqueNm);
+		let wheelTorqueNm = driveEngineTorqueNm * gearRatio * this.finalDrive * this.drivetrainEfficiency;
 		let driveForceN = wheelTorqueNm / Math.max(this.wheelRadiusM, 1e-6);
 		this.engineTorqueNm = engineTorqueNm;
 
